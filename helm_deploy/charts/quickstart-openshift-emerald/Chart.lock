@@ -1,0 +1,15 @@
+dependencies:
+- name: component
+  repository: ""
+  version: 0.3.0
+- name: component
+  repository: ""
+  version: 0.3.0
+- name: postgresql
+  repository: ""
+  version: 14.0.4
+- name: component
+  repository: ""
+  version: 0.3.0
+digest: sha256:cd37e27c6c5b021bc55ba2a1e707064bdcfe1e0102996fa4b4823dec35399a80
+generated: "2024-02-13T17:23:51.7527224-08:00"

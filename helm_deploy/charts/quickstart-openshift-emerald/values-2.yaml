@@ -1,0 +1,99 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#-- global variables, can be accessed by sub-charts.
+global:
+  #-- the registry where the images are stored. override during runtime for other registry at global level or individual level.
+  repository: bcgov/quickstart-openshift-emerald
+  #-- the registry where the images are stored. override during runtime for other registry at global level or individual level. default is ghcr.io
+  registry: ghcr.io
+  #-- the tag of the image, it can be latest, 1.0.0 etc..., or the sha256 hash
+  tag: 540891020aa1930b09ff9c1f038b33f9e22ccb99
+  #-- turn off autoscaling for the entire suite by setting this to false. default is true.
+  autoscaling: false
+  enabled: false # globally enable/disable the entire suite
+  #-- global secrets, can be accessed by sub-charts.
+  secrets:
+    enabled: true
+    databasePassword: ~
+    databaseUser: ~
+    databaseName: ~
+    annotation:
+      helm.sh/policy: "keep"
+  #-- domain of the application, it is required, apps.silver.devops.gov.bc.ca for silver cluster and apps.devops.gov.bc.ca for gold cluster
+  domain: "apps.emerald.devops.gov.bc.ca"
+  #-- the image registry of OpenShift. It is used in conjunction with ImageStreams which is a OpenShift specific resource.
+  #-- the database Alias gives a nice way to switch to different databases, crunchy, patroni ... etc.
+  databaseAlias: database # this is the alias for bitnami postgres, change it based on db type(crunchy,patroni...) and alias used in the chart.
+  #-- extra annotations for the pod, it is optional and is an object.
+  podAnnotations: |
+    app.kubernetes.io/timestamp: {{now | toString }}
+#-- the components of the application, backend.
+backend:
+  enabled: true
+  deploymentStrategy: Recreate
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+  service:
+    type: ClusterIP
+frontend:
+  enabled: true
+  deploymentStrategy: Recreate
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+  #-- the service for the component. for inter namespace communication, use the service name as the hostname.
+  service:
+    type: ClusterIP
+database:
+  enabled: true
+  deploymentStrategy: Recreate
+  replicaCount: 1
+  nameOverride: ""
+  fullnameOverride: ""
+  image:
+    repository: artifacts.developer.gov.bc.ca/github-docker-remote/bcgov/nr-containers/postgres
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: 15.5
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  imagePullSecrets: []
+  autoscaling:
+    enabled: false
+  service:
+    type: ClusterIP
+    port: 5432
+    targetPort: 5432
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources:
+    limits:
+      cpu: 60m
+      memory: 250Mi
+    requests:
+      cpu: 20m
+      memory: 100Mi
+  persistence:
+    enabled: false
+    size: 80Mi
+    accessMode: ReadWriteOnce
+    storageClass: netapp-block-standard
+backup:
+  enabled: false
+  pvc:
+    size: 256Mi
+    storageClassName: netapp-file-standard
+    accessModes: ReadWriteOnce
+  restartPolicy: "Never"
+  schedule: "0 0 * * *"
+  concurrencyPolicy: "Replace"
+  failedJobsHistoryLimit: 7
+  successfulJobsHistoryLimit: 30
+  startingDeadlineSeconds: 3600
