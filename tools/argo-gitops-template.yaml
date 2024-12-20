@@ -4,7 +4,7 @@ apiVersion: warden.devops.gov.bc.ca/v1alpha1
 kind: GitOpsTeam
 metadata:
   name: quickstart-openshift-emerald-team
-  namespace: a7469b-tools
+  namespace: c02f7f-tools
 spec:
   # gitOpsMembers defines the git repo access (tenant-gitops-LICENSEPLATE)
   # Note that if users listed here are not already members of the GitHub
@@ -26,6 +26,7 @@ spec:
     admins:
       - DerekRoberts
       - mishraomp
+      - gregorylavery
 
     # Recommended for contributors who actively push to your project.
     writers:
